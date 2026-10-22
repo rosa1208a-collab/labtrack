@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LabTrack · Tu bitácora de experimentos</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <div id="notice" role="status" aria-live="polite" hidden></div>
+  <main id="login-view" class="login-layout">
+    <section class="intro">
+      <a class="brand" href="/">◈ LabTrack</a>
+      <span class="eyebrow">DEL PROMPT AL DESPLIEGUE</span>
+      <h1>Una idea.<br>Un experimento.<br>Un nuevo hallazgo.</h1>
+      <p>Organiza tus proyectos, registra cada resultado y conserva el contexto de lo que aprendiste.</p>
+      <div class="intro-footer">Proyectos · Experimentos · Resultados</div>
+    </section>
+    <section class="login-card">
+      <span class="eyebrow">TU ESPACIO DE TRABAJO</span>
+      <h2>Continúa explorando</h2><p>Inicia sesión para abrir tu bitácora.</p>
+      <form id="login-form">
+        <label>Correo electrónico<input name="email" type="email" autocomplete="username" required placeholder="ana@example.com"></label>
+        <label>Contraseña<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+        <button type="submit">Entrar a LabTrack <span aria-hidden="true">→</span></button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+      <p class="help">Usa la cuenta y contraseña que configuraste al preparar el proyecto.</p>
+    </section>
+  </main>
+  <div id="workspace" hidden>
+    <header class="topbar"><a class="brand" href="/">◈ LabTrack</a><div class="account"><span id="user-email"></span><button id="logout" class="ghost">Cerrar sesión</button></div></header>
+    <main class="workspace">
+      <section class="page-heading"><div><span class="eyebrow">BITÁCORA DE INVESTIGACIÓN</span><h1>Tus ideas, en progreso.</h1><p>Un lugar para conectar proyectos con resultados.</p></div><a href="/docs" target="_blank" rel="noopener" class="text-link">Explorar la API ↗</a></section>
+      <section class="stats" aria-label="Resumen"><div><span>Proyectos</span><strong id="project-count">—</strong></div><div><span>Experimentos registrados</span><strong id="experiment-count">—</strong></div><div class="stat-note">Cada resultado cuenta.<br><b>Documenta lo que aprendiste.</b></div></section>
+      <div class="columns">
+        <aside class="panel"><div class="panel-heading"><h2>Proyectos</h2><button id="new-project" class="small">+ Nuevo</button></div><p class="help">Selecciona un proyecto para explorar sus experimentos.</p><div id="project-list" aria-live="polite"></div></aside>
+        <section class="panel experiments-panel">
+          <div class="panel-heading"><div><span class="eyebrow">PROYECTO SELECCIONADO</span><h2 id="selected-name">Tu siguiente proyecto</h2></div><div id="project-actions" class="actions" hidden><button id="edit-project" class="ghost small">Editar</button><button id="delete-project" class="ghost danger small">Eliminar</button></div></div>
+          <p id="selected-description" class="help">Crea un proyecto para comenzar tu bitácora.</p>
+          <div id="experiment-tools" class="toolbar" hidden><form id="filter-form"><label for="model-filter" class="sr-only">Filtrar por nombre exacto del modelo</label><input id="model-filter" placeholder="Modelo exacto, por ejemplo: RandomForest" maxlength="120"><button class="ghost" type="submit">Filtrar</button></form><button id="new-experiment">+ Experimento</button></div>
+          <div class="table-scroll"><table id="experiments-table" hidden><thead><tr><th>Experimento / dataset</th><th>Modelo</th><th>Métrica</th><th>Acciones</th></tr></thead><tbody id="experiment-list"></tbody></table></div>
+          <div id="experiment-empty" class="empty"><span aria-hidden="true">◈</span><h3>Todo empieza con una pregunta</h3><p>Aquí aparecerán los experimentos de tu proyecto.</p></div>
+        </section>
+      </div>
+      <footer>LabTrack · Un proyecto construido para aprender, experimentar y compartir.</footer>
+    </main>
+  </div>
+  <dialog id="project-dialog"><form id="project-form"><div class="panel-heading"><h2 id="project-dialog-title">Nuevo proyecto</h2><button type="button" class="ghost close-dialog" aria-label="Cerrar">✕</button></div><label>Nombre<input name="name" required maxlength="120"></label><label>Descripción<textarea name="description" rows="3" maxlength="2000"></textarea></label><p class="error form-error" role="alert"></p><div class="dialog-footer"><button type="button" class="ghost close-dialog">Cancelar</button><button type="submit">Guardar proyecto</button></div></form></dialog>
+  <dialog id="experiment-dialog"><form id="experiment-form"><div class="panel-heading"><h2 id="experiment-dialog-title">Nuevo experimento</h2><button type="button" class="ghost close-dialog" aria-label="Cerrar">✕</button></div><label>Nombre<input name="name" required maxlength="120"></label><div class="form-grid"><label>Modelo<input name="model" required maxlength="120" placeholder="RandomForest"></label><label>Versión del dataset<input name="dataset_version" required maxlength="120" placeholder="ventas-v1"></label><label>Métrica<input name="metric_name" required maxlength="60" placeholder="F1"></label><label>Valor<input name="metric_value" type="number" step="any" required placeholder="0.84"></label></div><label>Observaciones<textarea name="notes" rows="3" maxlength="4000"></textarea></label><p class="error form-error" role="alert"></p><div class="dialog-footer"><button type="button" class="ghost close-dialog">Cancelar</button><button type="submit">Guardar experimento</button></div></form></dialog>
+</body>
+</html>
