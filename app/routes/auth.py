@@ -102,6 +102,8 @@ def register(
     payload: RegisterInput, request: Request, response: Response, db=Depends(get_db)
 ):
     verify_origin(request)
+    if not request.app.state.settings.registration_enabled:
+        raise HTTPException(403, "El registro de cuentas está deshabilitado.")
     check_registration_limit(request, db)
     email = str(payload.email).lower()
     if db.scalar(select(User).where(User.email == email)):

@@ -21,7 +21,7 @@ No se proporciona ni contrata un servidor con la plantilla. El costo y disponibi
 1. Copia o clona el repositorio independiente en una carpeta de despliegue.
 2. Genera `.env` en el servidor con `python3 scripts/init_env.py`.
 3. Cambia `ALLOWED_ORIGINS` al origen HTTPS real, por ejemplo `["https://labtrack.ejemplo.edu"]`.
-4. Configura `SESSION_COOKIE_SECURE=true` y vacía `DEMO_PASSWORD`.
+4. Configura `SESSION_COOKIE_SECURE=true`, `REGISTRATION_ENABLED=false` y vacía `DEMO_PASSWORD`. Así, las cuentas solo se crean con la herramienta local `create-user`.
 5. Conserva una contraseña PostgreSQL propia. No transfieras las credenciales de la demo.
 6. Configura DNS y HTTPS en el proxy administrado y su destino `127.0.0.1:8010`.
 7. Arranca:
@@ -61,6 +61,6 @@ Guarda el archivo fuera del repositorio y protege su acceso: contiene los datos 
 
 ## Límites del MVP
 
-El control de acceso es básico: cinco intentos de inicio de sesión por cuenta y cinco registros por dirección IP durante quince minutos. La aplicación ve la dirección del proxy si hay uno delante; configura límites adicionales en el proxy y asegúrate de que solo proxies de confianza puedan establecer la dirección del cliente. El registro público no verifica el correo. Una publicación también necesita mantenimiento de dependencias, copias de seguridad verificadas y monitoreo. No hay recuperación de contraseña, MFA, auditoría de acciones ni paginación.
+El control de acceso es básico: cinco intentos de inicio de sesión por cuenta y cinco registros por dirección IP durante quince minutos. La aplicación ve la dirección del proxy si hay uno delante; configura límites adicionales en el proxy y asegúrate de que solo proxies de confianza puedan establecer la dirección del cliente. El registro público no verifica el correo y se puede deshabilitar con `REGISTRATION_ENABLED=false`. Una publicación también necesita mantenimiento de dependencias, copias de seguridad verificadas y monitoreo. No hay recuperación de contraseña, MFA, auditoría de acciones ni paginación.
 
 Referencia de operación: [Compose en producción](https://docs.docker.com/compose/how-tos/production/).

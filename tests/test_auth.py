@@ -3,6 +3,7 @@ from datetime import timedelta
 import pytest
 from sqlalchemy import select
 
+from app.config import Settings
 from app.models import AuthSession, LoginThrottle, User, utcnow
 from app.security import COOKIE_NAME, digest
 from tests.conftest import PASSWORD, login
@@ -143,6 +144,24 @@ def test_registration_throttle_is_persisted_and_expires(client, app):
         json={"email": "after-window@example.com", "password": "a-strong-password"},
     )
     assert resumed.status_code == 201
+
+
+def test_registration_can_be_disabled(client, app):
+    app.state.settings.registration_enabled = False
+    response = client.post(
+        "/api/auth/register",
+        json={"email": "new@example.com", "password": "a-strong-password"},
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "El registro de cuentas está deshabilitado."
+    with app.state.session_factory() as db:
+        assert db.scalar(select(User).where(User.email == "new@example.com")) is None
+        assert db.scalar(select(LoginThrottle)) is None
+
+
+def test_registration_setting_reads_environment(monkeypatch):
+    monkeypatch.setenv("REGISTRATION_ENABLED", "false")
+    assert Settings(_env_file=None).registration_enabled is False
 
 
 def test_login_rotates_session(client):

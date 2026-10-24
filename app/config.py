@@ -15,4 +15,5 @@ class Settings(BaseSettings):
     ]
     session_cookie_secure: bool = False
     session_hours: int = Field(default=8, ge=1, le=48)
+    registration_enabled: bool = True
     demo_password: str | None = None
