@@ -3,8 +3,8 @@ from datetime import timedelta
 import pytest
 from sqlalchemy import select
 
-from app.models import AuthSession, User, utcnow
-from app.security import COOKIE_NAME
+from app.models import AuthSession, LoginThrottle, User, utcnow
+from app.security import COOKIE_NAME, digest
 from tests.conftest import PASSWORD, login
 
 
@@ -111,6 +111,38 @@ def test_registration_validates_password_origin_and_duplicate(client):
     payload["password"] = "a-strong-password"
     assert client.post("/api/auth/register", json=payload).status_code == 201
     assert client.post("/api/auth/register", json=payload).status_code == 409
+
+
+def test_registration_throttle_is_persisted_and_expires(client, app):
+    for index in range(5):
+        response = client.post(
+            "/api/auth/register",
+            json={
+                "email": f"new-{index}@example.com",
+                "password": "a-strong-password",
+            },
+        )
+        assert response.status_code == 201
+
+    blocked = client.post(
+        "/api/auth/register",
+        json={"email": "blocked@example.com", "password": "a-strong-password"},
+    )
+    assert blocked.status_code == 429
+    assert blocked.json()["detail"] == "Demasiados registros. Espera quince minutos."
+
+    with app.state.session_factory() as db:
+        throttle = db.get(LoginThrottle, digest("register:testclient"))
+        assert throttle is not None
+        assert throttle.attempts == 5
+        throttle.window_start = utcnow() - timedelta(minutes=16)
+        db.commit()
+
+    resumed = client.post(
+        "/api/auth/register",
+        json={"email": "after-window@example.com", "password": "a-strong-password"},
+    )
+    assert resumed.status_code == 201
 
 
 def test_login_rotates_session(client):

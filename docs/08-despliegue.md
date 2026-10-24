@@ -61,6 +61,6 @@ Guarda el archivo fuera del repositorio y protege su acceso: contiene los datos 
 
 ## Límites del MVP
 
-El control de intentos de acceso de la app es básico, por cuenta. El registro público no verifica el correo ni limita las solicitudes de alta; antes de abrir el servicio a usuarios reales, configura límites de tráfico en el proxy. Una publicación también necesita mantenimiento de dependencias, copias de seguridad verificadas y monitoreo. No hay recuperación de contraseña, MFA, auditoría de acciones ni paginación.
+El control de acceso es básico: cinco intentos de inicio de sesión por cuenta y cinco registros por dirección IP durante quince minutos. La aplicación ve la dirección del proxy si hay uno delante; configura límites adicionales en el proxy y asegúrate de que solo proxies de confianza puedan establecer la dirección del cliente. El registro público no verifica el correo. Una publicación también necesita mantenimiento de dependencias, copias de seguridad verificadas y monitoreo. No hay recuperación de contraseña, MFA, auditoría de acciones ni paginación.
 
 Referencia de operación: [Compose en producción](https://docs.docker.com/compose/how-tos/production/).
