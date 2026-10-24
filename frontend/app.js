@@ -14,6 +14,9 @@ function showLogin() {
   document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
   $("#workspace").hidden = true;
   $("#login-view").hidden = false;
+  $("#account-menu").open = false;
+  $("#login-panel").hidden = false;
+  $("#register-panel").hidden = true;
   csrf = "";
 }
 
@@ -52,6 +55,17 @@ async function enterWorkspace(user) {
   selectedId = null;
   await refresh();
 }
+
+$("#show-register").addEventListener("click", () => {
+  $("#login-panel").hidden = true;
+  $("#register-panel").hidden = false;
+  $("#register-form").elements.email.focus();
+});
+$("#show-login").addEventListener("click", () => {
+  $("#register-panel").hidden = true;
+  $("#login-panel").hidden = false;
+  $("#login-form").elements.email.focus();
+});
 
 async function refresh() {
   $("#project-list").textContent = "Cargando proyectos…";
@@ -171,9 +185,34 @@ $("#login-form").addEventListener("submit", async (event) => {
   finally { button.disabled = false; }
 });
 
+$("#register-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.target, button = form.querySelector('[type="submit"]');
+  button.disabled = true;
+  $("#register-error").textContent = "";
+  const values = Object.fromEntries(new FormData(form));
+  if (values.password !== values["password-confirm"]) {
+    $("#register-error").textContent = "Las contraseñas no coinciden.";
+    button.disabled = false;
+    return;
+  }
+  delete values["password-confirm"];
+  try {
+    const user = await api("/auth/register", { method: "POST", body: JSON.stringify(values) });
+    form.reset();
+    await enterWorkspace(user);
+  } catch (error) {
+    $("#register-error").textContent = error.message;
+    notify(error.message);
+  } finally { button.disabled = false; }
+});
+
 $("#logout").addEventListener("click", async () => {
   try { await api("/auth/logout", { method: "POST" }); showLogin(); }
   catch (error) { notify(error.message); }
+});
+$("#account-menu").addEventListener("click", (event) => {
+  if (event.target.closest("a, button")) $("#account-menu").open = false;
 });
 $("#new-project").addEventListener("click", () => openProject());
 $("#edit-project").addEventListener("click", () => openProject(projects.find((project) => project.id === selectedId)));

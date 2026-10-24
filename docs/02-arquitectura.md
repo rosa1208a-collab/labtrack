@@ -18,7 +18,7 @@
 | RNF03 | Interfaz usable | Formularios etiquetados, errores visibles, estado vacío y confirmación de borrado |
 | RNF04 | Configuración externa | Secretos en `.env`, ejemplos sin secretos en `.env.example` |
 
-Cada usuario solo trabaja con proyectos propios. No hay roles de administrador en la interfaz ni colaboración entre usuarios. La creación de cuentas se hace mediante una herramienta local del administrador.
+Cada usuario solo trabaja con proyectos propios. No hay roles de administrador en la interfaz ni colaboración entre usuarios. Cualquier persona puede crear una cuenta desde la pantalla de inicio; no se envía correo de verificación.
 
 ## Arquitectura
 
@@ -81,6 +81,7 @@ Tablas de soporte: `auth_sessions` guarda el hash del token de sesión, usuario,
 | Método | Ruta | Resultado |
 |---|---|---|
 | POST | `/api/auth/login` | 200, cookie de sesión y token CSRF |
+| POST | `/api/auth/register` | 201, crea una cuenta con contraseña de al menos 12 caracteres e inicia sesión |
 | GET | `/api/auth/me` | 200, correo y token CSRF de la sesión |
 | POST | `/api/auth/logout` | 204, revoca la sesión |
 | GET | `/api/projects` | 200, lista de proyectos propios |

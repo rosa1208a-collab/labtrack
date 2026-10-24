@@ -13,6 +13,9 @@ def test_health_and_frontend(client):
     response = client.get("/")
     assert response.status_code == 200
     assert "LabTrack" in response.text
+    assert 'id="register-form"' in response.text
+    assert "Mis proyectos" in response.text
+    assert "Cerrar sesión" in response.text
     assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
 
 
@@ -76,6 +79,38 @@ def test_login_throttle(client):
     for _ in range(5):
         assert client.post("/api/auth/login", json=payload).status_code == 401
     assert client.post("/api/auth/login", json=payload).status_code == 429
+
+
+def test_registration_creates_user_and_session(client, app):
+    response = client.post(
+        "/api/auth/register",
+        json={"email": "new@example.com", "password": "a-strong-password"},
+    )
+    assert response.status_code == 201
+    assert "httponly" in response.headers["set-cookie"].lower()
+    assert response.json()["email"] == "new@example.com"
+    client.headers["X-CSRF-Token"] = response.json()["csrf_token"]
+    assert client.get("/api/auth/me").json()["email"] == "new@example.com"
+    with app.state.session_factory() as db:
+        user = db.scalar(select(User).where(User.email == "new@example.com"))
+        assert user is not None
+        assert user.password_hash != "a-strong-password"
+
+
+def test_registration_validates_password_origin_and_duplicate(client):
+    payload = {"email": "new@example.com", "password": "short"}
+    assert client.post("/api/auth/register", json=payload).status_code == 422
+    assert (
+        client.post(
+            "/api/auth/register",
+            json={"email": "new@example.com", "password": "a-strong-password"},
+            headers={"Origin": "https://other.example"},
+        ).status_code
+        == 403
+    )
+    payload["password"] = "a-strong-password"
+    assert client.post("/api/auth/register", json=payload).status_code == 201
+    assert client.post("/api/auth/register", json=payload).status_code == 409
 
 
 def test_login_rotates_session(client):

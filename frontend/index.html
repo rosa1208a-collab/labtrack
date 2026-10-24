@@ -17,24 +17,40 @@
       <div class="intro-footer">Proyectos · Experimentos · Resultados</div>
     </section>
     <section class="login-card">
-      <span class="eyebrow">TU ESPACIO DE TRABAJO</span>
-      <h2>Continúa explorando</h2><p>Inicia sesión para abrir tu bitácora.</p>
-      <form id="login-form">
-        <label>Correo electrónico<input name="email" type="email" autocomplete="username" required placeholder="ana@example.com"></label>
-        <label>Contraseña<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
-        <button type="submit">Entrar a LabTrack <span aria-hidden="true">→</span></button>
-        <p id="login-error" class="error" role="alert"></p>
-      </form>
-      <p class="help">Usa la cuenta y contraseña que configuraste al preparar el proyecto.</p>
+      <div id="login-panel">
+        <span class="eyebrow">TU ESPACIO DE TRABAJO</span>
+        <h2>Continúa explorando</h2><p>Inicia sesión para abrir tu bitácora.</p>
+        <form id="login-form">
+          <label>Correo electrónico<input name="email" type="email" autocomplete="username" required placeholder="ana@example.com"></label>
+          <label>Contraseña<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+          <button type="submit">Entrar a LabTrack <span aria-hidden="true">→</span></button>
+          <p id="login-error" class="error" role="alert"></p>
+        </form>
+        <p class="help">Usa tu cuenta existente o crea una nueva.</p>
+        <p class="auth-switch">¿Eres nuevo? <button id="show-register" class="text-button" type="button">Crear una cuenta</button></p>
+      </div>
+      <div id="register-panel" hidden>
+        <span class="eyebrow">EMPIEZA TU BITÁCORA</span>
+        <h2>Crea tu cuenta</h2><p>Regístrate para organizar tus proyectos.</p>
+        <form id="register-form">
+          <label>Correo electrónico<input name="email" type="email" autocomplete="email" required placeholder="tu@correo.com"></label>
+          <label>Contraseña<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="128"></label>
+          <label>Confirma tu contraseña<input name="password-confirm" type="password" autocomplete="new-password" required minlength="12" maxlength="128"></label>
+          <button type="submit">Crear cuenta <span aria-hidden="true">→</span></button>
+          <p id="register-error" class="error" role="alert"></p>
+        </form>
+        <p class="help">Usa al menos 12 caracteres. No se envía correo de verificación.</p>
+        <p class="auth-switch">¿Ya tienes cuenta? <button id="show-login" class="text-button" type="button">Inicia sesión</button></p>
+      </div>
     </section>
   </main>
   <div id="workspace" hidden>
-    <header class="topbar"><a class="brand" href="/">◈ LabTrack</a><div class="account"><span id="user-email"></span><button id="logout" class="ghost">Cerrar sesión</button></div></header>
+    <header class="topbar"><a class="brand" href="/">◈ LabTrack</a><details id="account-menu" class="account-menu"><summary>Usuario</summary><div class="account-dropdown"><span id="user-email"></span><a href="#my-projects">Mis proyectos</a><button id="logout" class="ghost">Cerrar sesión</button></div></details></header>
     <main class="workspace">
       <section class="page-heading"><div><span class="eyebrow">BITÁCORA DE INVESTIGACIÓN</span><h1>Tus ideas, en progreso.</h1><p>Un lugar para conectar proyectos con resultados.</p></div><a href="/docs" target="_blank" rel="noopener" class="text-link">Explorar la API ↗</a></section>
       <section class="stats" aria-label="Resumen"><div><span>Proyectos</span><strong id="project-count">—</strong></div><div><span>Experimentos registrados</span><strong id="experiment-count">—</strong></div><div class="stat-note">Cada resultado cuenta.<br><b>Documenta lo que aprendiste.</b></div></section>
       <div class="columns">
-        <aside class="panel"><div class="panel-heading"><h2>Proyectos</h2><button id="new-project" class="small">+ Nuevo</button></div><p class="help">Selecciona un proyecto para explorar sus experimentos.</p><div id="project-list" aria-live="polite"></div></aside>
+        <aside id="my-projects" class="panel"><div class="panel-heading"><h2>Mis proyectos</h2><button id="new-project" class="small">+ Nuevo</button></div><p class="help">Selecciona un proyecto para explorar sus experimentos.</p><div id="project-list" aria-live="polite"></div></aside>
         <section class="panel experiments-panel">
           <div class="panel-heading"><div><span class="eyebrow">PROYECTO SELECCIONADO</span><h2 id="selected-name">Tu siguiente proyecto</h2></div><div id="project-actions" class="actions" hidden><button id="edit-project" class="ghost small">Editar</button><button id="delete-project" class="ghost danger small">Eliminar</button></div></div>
           <p id="selected-description" class="help">Crea un proyecto para comenzar tu bitácora.</p>
