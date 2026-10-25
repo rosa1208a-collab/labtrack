@@ -3,8 +3,9 @@ from datetime import timedelta
 import pytest
 from sqlalchemy import select
 
-from app.models import AuthSession, User, utcnow
-from app.security import COOKIE_NAME
+from app.config import Settings
+from app.models import AuthSession, LoginThrottle, User, utcnow
+from app.security import COOKIE_NAME, digest
 from tests.conftest import PASSWORD, login
 
 
@@ -13,6 +14,10 @@ def test_health_and_frontend(client):
     response = client.get("/")
     assert response.status_code == 200
     assert "LabTrack" in response.text
+    assert 'id="register-form"' in response.text
+    assert "Mi perfil" in response.text
+    assert "Mis proyectos" in response.text
+    assert "Cerrar sesión" in response.text
     assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
 
 
@@ -76,6 +81,88 @@ def test_login_throttle(client):
     for _ in range(5):
         assert client.post("/api/auth/login", json=payload).status_code == 401
     assert client.post("/api/auth/login", json=payload).status_code == 429
+
+
+def test_registration_creates_user_and_session(client, app):
+    response = client.post(
+        "/api/auth/register",
+        json={"email": "new@example.com", "password": "a-strong-password"},
+    )
+    assert response.status_code == 201
+    assert "httponly" in response.headers["set-cookie"].lower()
+    assert response.json()["email"] == "new@example.com"
+    client.headers["X-CSRF-Token"] = response.json()["csrf_token"]
+    assert client.get("/api/auth/me").json()["email"] == "new@example.com"
+    with app.state.session_factory() as db:
+        user = db.scalar(select(User).where(User.email == "new@example.com"))
+        assert user is not None
+        assert user.password_hash != "a-strong-password"
+
+
+def test_registration_validates_password_origin_and_duplicate(client):
+    payload = {"email": "new@example.com", "password": "short"}
+    assert client.post("/api/auth/register", json=payload).status_code == 422
+    assert (
+        client.post(
+            "/api/auth/register",
+            json={"email": "new@example.com", "password": "a-strong-password"},
+            headers={"Origin": "https://other.example"},
+        ).status_code
+        == 403
+    )
+    payload["password"] = "a-strong-password"
+    assert client.post("/api/auth/register", json=payload).status_code == 201
+    assert client.post("/api/auth/register", json=payload).status_code == 409
+
+
+def test_registration_throttle_is_persisted_and_expires(client, app):
+    for index in range(5):
+        response = client.post(
+            "/api/auth/register",
+            json={
+                "email": f"new-{index}@example.com",
+                "password": "a-strong-password",
+            },
+        )
+        assert response.status_code == 201
+
+    blocked = client.post(
+        "/api/auth/register",
+        json={"email": "blocked@example.com", "password": "a-strong-password"},
+    )
+    assert blocked.status_code == 429
+    assert blocked.json()["detail"] == "Demasiados registros. Espera quince minutos."
+
+    with app.state.session_factory() as db:
+        throttle = db.get(LoginThrottle, digest("register:testclient"))
+        assert throttle is not None
+        assert throttle.attempts == 5
+        throttle.window_start = utcnow() - timedelta(minutes=16)
+        db.commit()
+
+    resumed = client.post(
+        "/api/auth/register",
+        json={"email": "after-window@example.com", "password": "a-strong-password"},
+    )
+    assert resumed.status_code == 201
+
+
+def test_registration_can_be_disabled(client, app):
+    app.state.settings.registration_enabled = False
+    response = client.post(
+        "/api/auth/register",
+        json={"email": "new@example.com", "password": "a-strong-password"},
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "El registro de cuentas está deshabilitado."
+    with app.state.session_factory() as db:
+        assert db.scalar(select(User).where(User.email == "new@example.com")) is None
+        assert db.scalar(select(LoginThrottle)) is None
+
+
+def test_registration_setting_reads_environment(monkeypatch):
+    monkeypatch.setenv("REGISTRATION_ENABLED", "false")
+    assert Settings(_env_file=None).registration_enabled is False
 
 
 def test_login_rotates_session(client):

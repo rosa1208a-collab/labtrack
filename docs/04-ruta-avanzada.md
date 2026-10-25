@@ -77,7 +77,7 @@ Cambiar `POSTGRES_PASSWORD` en `.env` no cambia la contraseña de una BD que ya 
 docker compose exec app python -m app.cli create-user
 ```
 
-La herramienta pide correo y una contraseña de 12 a 128 caracteres, con confirmación. No hay registro público ni contraseña de administrador predefinida. La demo es solo para el entorno local.
+La herramienta pide correo y una contraseña de 12 a 128 caracteres, con confirmación. También se puede crear una cuenta desde el formulario público de registro; no requiere correo de verificación. No hay contraseña de administrador predefinida. La demo es solo para el entorno local.
 
 ## 7. Repositorio y CI
 

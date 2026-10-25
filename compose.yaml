@@ -9,6 +9,7 @@ x-application: &application
     ALLOWED_ORIGINS: '${ALLOWED_ORIGINS:-["http://127.0.0.1:8010","http://localhost:8010"]}'
     SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
     SESSION_HOURS: ${SESSION_HOURS:-8}
+    REGISTRATION_ENABLED: ${REGISTRATION_ENABLED:-true}
     DEMO_PASSWORD: ${DEMO_PASSWORD:-}
   init: true
   security_opt:

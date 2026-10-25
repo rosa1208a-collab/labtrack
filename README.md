@@ -40,6 +40,7 @@ docker compose exec app python -m app.cli seed-demo
 - Frontend en español con formularios, estados vacíos, mensajes y diseño adaptable.
 - FastAPI con documentación interactiva en `/docs` y estado en `/health`.
 - Contraseñas Argon2, sesiones revocables almacenadas en la BD y cookies HttpOnly.
+- Registro de cuentas desde la pantalla de inicio; requiere contraseña de al menos 12 caracteres y no incluye verificación por correo.
 - Validación de origen y token CSRF para operaciones autenticadas que modifican datos.
 - CRUD de proyectos y experimentos; aislamiento por propietario.
 - Filtro exacto por modelo, resumen real y restricción al eliminar proyectos con experimentos.
