@@ -1,9 +1,14 @@
-# 00-inicio
+# Solución completa de referencia
 
-Autenticación e interfaz listas. Implementa proyectos y experimentos.
+Este directorio contiene la solución completa de referencia, con autenticación,
+proyectos, experimentos, pruebas y configuración de Docker.
 
-Sigue README.md y docs/03-ruta-basica.md o docs/04-ruta-avanzada.md.
+Sigue [README.md](README.md) y elige [la ruta básica](docs/03-ruta-basica.md)
+o [la ruta avanzada](docs/04-ruta-avanzada.md).
 
-Los endpoints pendientes responden 501 de forma intencional. En 00-inicio y 01-proyectos ejecuta primero tests/test_auth.py; las pruebas de dominio describen el objetivo y fallarán hasta implementar el CRUD. En 02-completo debe pasar toda la suite.
+Los paquetes de ejercicio `00-inicio`, `01-proyectos` y `02-completo` se
+generan por separado con `python scripts/package_workshop.py`; cada paquete
+incluye su propio `ETAPA.md` y los pendientes intencionales de su etapa.
 
-Conserva tu carpeta anterior; extrae cada recuperación en una carpeta nueva.
+Al recuperar un paquete de ejercicio, conserva tu carpeta anterior y extráelo
+en una carpeta nueva.

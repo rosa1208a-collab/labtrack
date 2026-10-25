@@ -1,9 +1,9 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Response
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import Project, Experiment
+from app.models import Experiment, Project
 from app.schemas import ProjectInput, ProjectOut
 from app.security import get_current_user, get_db
 
