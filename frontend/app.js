@@ -53,7 +53,11 @@ async function enterWorkspace(user) {
   $("#login-view").hidden = true;
   $("#workspace").hidden = false;
   selectedId = null;
-  await refresh();
+  try {
+    await refresh();
+  } catch (error) {
+    notify(`Sesión iniciada. No se pudo cargar la bitácora: ${error.message}`);
+  }
 }
 
 $("#show-register").addEventListener("click", () => {

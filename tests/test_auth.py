@@ -15,6 +15,7 @@ def test_health_and_frontend(client):
     assert response.status_code == 200
     assert "LabTrack" in response.text
     assert 'id="register-form"' in response.text
+    assert "Mi perfil" in response.text
     assert "Mis proyectos" in response.text
     assert "Cerrar sesión" in response.text
     assert "frame-ancestors 'none'" in response.headers["content-security-policy"]

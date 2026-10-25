@@ -26,8 +26,7 @@
           <button type="submit">Entrar a LabTrack <span aria-hidden="true">→</span></button>
           <p id="login-error" class="error" role="alert"></p>
         </form>
-        <p class="help">Usa tu cuenta existente o crea una nueva.</p>
-        <p class="auth-switch">¿Eres nuevo? <button id="show-register" class="text-button" type="button">Crear una cuenta</button></p>
+        <div class="auth-switch"><span>¿Aún no tienes cuenta?</span><button id="show-register" class="text-button" type="button">Crear cuenta</button></div>
       </div>
       <div id="register-panel" hidden>
         <span class="eyebrow">EMPIEZA TU BITÁCORA</span>
@@ -45,7 +44,7 @@
     </section>
   </main>
   <div id="workspace" hidden>
-    <header class="topbar"><a class="brand" href="/">◈ LabTrack</a><details id="account-menu" class="account-menu"><summary>Usuario</summary><div class="account-dropdown"><span id="user-email"></span><a href="#my-projects">Mis proyectos</a><button id="logout" class="ghost">Cerrar sesión</button></div></details></header>
+    <header class="topbar"><a class="brand" href="/">◈ LabTrack</a><details id="account-menu" class="account-menu"><summary aria-label="Abrir menú de perfil"><span aria-hidden="true">●</span> Mi perfil</summary><div class="account-dropdown"><span id="user-email"></span><a href="#my-projects">Mis proyectos</a><button id="logout" class="ghost">Cerrar sesión</button></div></details></header>
     <main class="workspace">
       <section class="page-heading"><div><span class="eyebrow">BITÁCORA DE INVESTIGACIÓN</span><h1>Tus ideas, en progreso.</h1><p>Un lugar para conectar proyectos con resultados.</p></div><a href="/docs" target="_blank" rel="noopener" class="text-link">Explorar la API ↗</a></section>
       <section class="stats" aria-label="Resumen"><div><span>Proyectos</span><strong id="project-count">—</strong></div><div><span>Experimentos registrados</span><strong id="experiment-count">—</strong></div><div class="stat-note">Cada resultado cuenta.<br><b>Documenta lo que aprendiste.</b></div></section>
