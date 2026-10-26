@@ -10,6 +10,15 @@ from app.security import get_current_user, get_db
 router = APIRouter(tags=["projects"])
 
 
+def owned_project(db: Session, project_id: int, user_id: int) -> Project:
+    project = db.scalar(
+        select(Project).where(Project.id == project_id, Project.user_id == user_id)
+    )
+    if project is None:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado.")
+    return project
+
+
 @router.get("/projects", response_model=list[ProjectOut])
 def list_projects(user=Depends(get_current_user), db: Session = Depends(get_db)):
     return db.scalars(
@@ -36,12 +45,7 @@ def get_project(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    project = db.scalar(
-        select(Project).where(Project.id == project_id, Project.user_id == user.id)
-    )
-    if project is None:
-        raise HTTPException(status_code=404, detail="Proyecto no encontrado.")
-    return project
+    return owned_project(db, project_id, user.id)
 
 
 @router.put("/projects/{project_id}", response_model=ProjectOut)
@@ -51,11 +55,7 @@ def update_project(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    project = db.scalar(
-        select(Project).where(Project.id == project_id, Project.user_id == user.id)
-    )
-    if project is None:
-        raise HTTPException(status_code=404, detail="Proyecto no encontrado.")
+    project = owned_project(db, project_id, user.id)
 
     for field, value in data.model_dump().items():
         setattr(project, field, value)
@@ -71,11 +71,7 @@ def delete_project(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    project = db.scalar(
-        select(Project).where(Project.id == project_id, Project.user_id == user.id)
-    )
-    if project is None:
-        raise HTTPException(status_code=404, detail="Proyecto no encontrado.")
+    project = owned_project(db, project_id, user.id)
 
     experiments_count = db.scalar(
         select(func.count())

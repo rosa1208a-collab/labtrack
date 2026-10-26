@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import Experiment, Project
+from app.routes.projects import owned_project
 from app.schemas import ExperimentInput, ExperimentOut
 from app.security import get_current_user, get_db
 
@@ -17,11 +18,7 @@ def list_experiments(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    project = db.scalar(
-        select(Project).where(Project.id == project_id, Project.user_id == user.id)
-    )
-    if project is None:
-        raise HTTPException(status_code=404, detail="Proyecto no encontrado.")
+    owned_project(db, project_id, user.id)
 
     query = select(Experiment).where(Experiment.project_id == project_id)
     if model is not None:
@@ -41,11 +38,7 @@ def create_experiment(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    project = db.scalar(
-        select(Project).where(Project.id == project_id, Project.user_id == user.id)
-    )
-    if project is None:
-        raise HTTPException(status_code=404, detail="Proyecto no encontrado.")
+    project = owned_project(db, project_id, user.id)
 
     experiment = Experiment(project_id=project.id, **data.model_dump())
     db.add(experiment)
